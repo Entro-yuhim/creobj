@@ -16,8 +16,12 @@ public class ObjectGenerator {
     private Objenesis objenesis = new ObjenesisStd();
 
     private boolean generateInterfaceClasses = false;
+    private Map<String, ValueGenerator> userDefinedGenerators = new HashMap<>();
+    private GeneratorContainer generatorContainer = new GeneratorContainer();
 
-    private Map<Class, ValueGenerator> valueGeneratorMap = new HashMap<>();
+    protected void addValueGenerator(ValueGenerator valueGenerator) {
+        generatorContainer.addDefaultGenerator(valueGenerator.getValueClass(), valueGenerator);
+    }
 
     /**
      * Instantiates Object generator with default generators
@@ -60,8 +64,22 @@ public class ObjectGenerator {
         }
     }
 
-    private void addValueGenerator(ValueGenerator valueGenerator) {
-        valueGeneratorMap.put(valueGenerator.getValueClass(), valueGenerator);
+    public ObjectGenerator(Map<String, ValueGenerator> userDefinedGenerators) {
+        this();
+
+    }
+
+    public Map<String, ValueGenerator> getUserDefinedGenerators() {
+        return userDefinedGenerators;
+    }
+
+    /**
+     * Pass user-defined generators to ObjectGenerator. Key is class field name in CamelCase.
+     *
+     * @param userDefinedGenerators map of user-defined {@link ValueGenerator}.
+     */
+    public void setUserDefinedGenerators(Map<String, ValueGenerator> userDefinedGenerators) {
+        this.userDefinedGenerators = userDefinedGenerators;
     }
 
     /**
@@ -92,21 +110,23 @@ public class ObjectGenerator {
      * <li>Any object (recursively filled with random values)</li>
      * </ol>
      *
-     * @param claz type of the created object
+     * @param clazz type of the created object
      * @return {@link Object} - created object
      * @throws ReflectiveOperationException in case of any problems in reflection operations
      */
-    public <T> T createObject(Class<T> claz) throws ReflectiveOperationException {
-        T obj = objenesis.getInstantiatorOf(claz).newInstance();
-        Field[] declaredFields = claz.getDeclaredFields();
+    public <T> T generateObject(Class<T> clazz) throws ReflectiveOperationException {
+        T obj = objenesis.getInstantiatorOf(clazz).newInstance();
+        Field[] declaredFields = clazz.getDeclaredFields();
         try {
             for (Field f : declaredFields) {
                 Util.makeAccessible(f);
-                if (Modifier.isFinal(f.getModifiers()) || Modifier.isStatic(f.getModifiers()) ||
-                        !isAvailableForGeneration(f, obj)) {
-                    continue;
+                if (!Modifier.isFinal(f.getModifiers()) && !Modifier.isStatic(f.getModifiers())) {
+                    if (generatorContainer.canApplyUserDefinedGenerator(f)) {
+                        f.set(obj, generatorContainer.getUserDefinedGenerators());
+                    } else if (isAvailableForGeneration(f, obj)) {
+                        f.set(obj, getObjectValue(f.getType()));
+                    }
                 }
-                f.set(obj, getObjectValue(f.getType()));
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new ReflectiveOperationException(e);
@@ -114,17 +134,10 @@ public class ObjectGenerator {
         return obj;
     }
 
-    /**
-     * Returns object using generators or randomizer
-     *
-     * @param claz class of the value to be generated
-     * @return generated value
-     * @throws ReflectiveOperationException in case of any internal errors
-     */
-    private <T> Object getObjectValue(Class<T> claz) throws ReflectiveOperationException {
-        // TODO: check if assignable
-        if (valueGeneratorMap.containsKey(claz)) return valueGeneratorMap.get(claz).generateValue(claz);
-        return generateRandomValue(claz);
+    private <T> Object getObjectValue(Class<T> clazz) throws ReflectiveOperationException {
+        if (generatorContainer.canApplyDefaultGenerator(clazz))
+            return generatorContainer.getValueGenerator(clazz).generateValue(clazz);
+        return generateRandomValue(clazz);
     }
 
     /**
@@ -135,7 +148,6 @@ public class ObjectGenerator {
      * @throws ReflectiveOperationException in case of any internal errors
      */
     private <T> Object generateRandomValue(Class<T> claz) throws ReflectiveOperationException {
-        Random random = new Random(new Date().getTime());
         // arrays
         if (claz.isArray()) {
             Object arr = Array.newInstance(claz.getComponentType(), 1);
@@ -144,7 +156,7 @@ public class ObjectGenerator {
         }
         // primitives
         else if (claz.isPrimitive()) {
-            return getRandomPrimitiveValue(random, claz);
+            return getRandomPrimitiveValue(claz);
         }
         // collections
         else if (Util.isContainer(claz)) {
@@ -152,34 +164,34 @@ public class ObjectGenerator {
         }
         // other objects
         else {
-            return createObject(claz);
+            return generateObject(claz);
         }
     }
 
     /**
      * Returns random primitive value
      *
-     * @param r    random object
      * @param claz class of the value to be generated
      * @return random primitive value
      */
-    private Object getRandomPrimitiveValue(Random r, Class<?> claz) {
+    private Object getRandomPrimitiveValue(Class<?> claz) {
+        Random random = new Random(new Date().getTime());
         if (claz.equals(Byte.TYPE)) {
-            return (byte) r.nextInt(Byte.MAX_VALUE + 1);
+            return (byte) random.nextInt(Byte.MAX_VALUE + 1);
         } else if (claz.equals(Short.TYPE)) {
-            return (short) r.nextInt(Short.MAX_VALUE + 1);
+            return (short) random.nextInt(Short.MAX_VALUE + 1);
         } else if (claz.equals(Integer.TYPE)) {
-            return r.nextInt();
+            return random.nextInt();
         } else if (claz.equals(Long.TYPE)) {
-            return r.nextLong();
+            return random.nextLong();
         } else if (claz.equals(Float.TYPE)) {
-            return r.nextFloat();
+            return random.nextFloat();
         } else if (claz.equals(Double.TYPE)) {
-            return r.nextDouble();
+            return random.nextDouble();
         } else if (claz.equals(Boolean.TYPE)) {
-            return r.nextBoolean();
+            return random.nextBoolean();
         } else {
-            return (char) r.nextInt(Character.MAX_VALUE + 1);
+            return (char) random.nextInt(Character.MAX_VALUE + 1);
         }
     }
 
@@ -197,7 +209,7 @@ public class ObjectGenerator {
         System.out.println(String.format("[WARNING] Generating entity from interface <%s>, " +
                 "this feature may lead to errors.", claz.getName()));
         if (Map.class.isAssignableFrom(claz)) {
-            return new TreeMap();
+            return new HashMap();
         } else if (List.class.isAssignableFrom(claz)) {
             return new ArrayList();
         } else if (Set.class.isAssignableFrom(claz)) {
@@ -224,13 +236,7 @@ public class ObjectGenerator {
         // check if there is a value so we should not add anything in there
         if (f.get(o) != null) return false;
         // check if we got a generator for this key
-        if (valueGeneratorMap.containsKey(claz)) return true;
-        else {
-            for (Map.Entry<Class, ValueGenerator> entry : valueGeneratorMap.entrySet()) {
-                if (!entry.getValue().isAssignable()) continue;
-                if (entry.getKey().isAssignableFrom(claz)) return true;
-            }
-        }
+        if (generatorContainer.canApplyDefaultGenerator(f)) return true;
         // if it is an interface, check if we got interface generation permission
         if (claz.isInterface() && generateInterfaceClasses) return true;
         // at last, try to generate it via objenesis API

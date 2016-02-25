@@ -24,4 +24,9 @@ public class EnumGenerator extends CommonValueGenerator<Enum> {
         }
         throw new IllegalArgumentException(getIllegalClassAlert(claz));
     }
+
+    @Override
+    public boolean canApplyForClass(Class<?> clazz) {
+        return Enum.class.isAssignableFrom(clazz);
+    }
 }

@@ -25,4 +25,9 @@ public class NumberGenerator extends CommonValueGenerator<Number> {
         throw new IllegalArgumentException(getIllegalClassAlert(claz));
     }
 
+    @Override
+    public boolean canApplyForClass(Class<?> clazz) {
+        return Number.class.isAssignableFrom(clazz);
+    }
+
 }

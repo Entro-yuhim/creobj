@@ -101,9 +101,7 @@ public class TestObject {
     }
 
     private <T> Set<T> copySet(Set<T> set) {
-        Set<T> result = new HashSet<>();
-        result.addAll(set);
-        return result;
+        return new HashSet<>(set);
     }
 
     private <K, V> Map<K, V> copyMap(Map<K, V> map) {
@@ -123,5 +121,221 @@ public class TestObject {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public byte getB() {
+        return b;
+    }
+
+    public void setB(byte b) {
+        this.b = b;
+    }
+
+    public short getS() {
+        return s;
+    }
+
+    public void setS(short s) {
+        this.s = s;
+    }
+
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    public long getL() {
+        return l;
+    }
+
+    public void setL(long l) {
+        this.l = l;
+    }
+
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
+    }
+
+    public double getD() {
+        return d;
+    }
+
+    public void setD(double d) {
+        this.d = d;
+    }
+
+    public boolean isBool() {
+        return bool;
+    }
+
+    public void setBool(boolean bool) {
+        this.bool = bool;
+    }
+
+    public char getC() {
+        return c;
+    }
+
+    public void setC(char c) {
+        this.c = c;
+    }
+
+    public TestObjectInner getTestObjectInner() {
+        return testObjectInner;
+    }
+
+    public void setTestObjectInner(TestObjectInner testObjectInner) {
+        this.testObjectInner = testObjectInner;
+    }
+
+    public String getStr() {
+        return str;
+    }
+
+    public void setStr(String str) {
+        this.str = str;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Integer getiNumber() {
+        return iNumber;
+    }
+
+    public void setiNumber(Integer iNumber) {
+        this.iNumber = iNumber;
+    }
+
+    public byte[] getbArray() {
+        return bArray;
+    }
+
+    public void setbArray(byte[] bArray) {
+        this.bArray = bArray;
+    }
+
+    public short[] getsArray() {
+        return sArray;
+    }
+
+    public void setsArray(short[] sArray) {
+        this.sArray = sArray;
+    }
+
+    public int[] getiArray() {
+        return iArray;
+    }
+
+    public void setiArray(int[] iArray) {
+        this.iArray = iArray;
+    }
+
+    public long[] getlArray() {
+        return lArray;
+    }
+
+    public void setlArray(long[] lArray) {
+        this.lArray = lArray;
+    }
+
+    public float[] getfArray() {
+        return fArray;
+    }
+
+    public void setfArray(float[] fArray) {
+        this.fArray = fArray;
+    }
+
+    public double[] getdArray() {
+        return dArray;
+    }
+
+    public void setdArray(double[] dArray) {
+        this.dArray = dArray;
+    }
+
+    public boolean[] getBoolArray() {
+        return boolArray;
+    }
+
+    public void setBoolArray(boolean[] boolArray) {
+        this.boolArray = boolArray;
+    }
+
+    public char[] getcArray() {
+        return cArray;
+    }
+
+    public void setcArray(char[] cArray) {
+        this.cArray = cArray;
+    }
+
+    public String[] getStrArray() {
+        return strArray;
+    }
+
+    public void setStrArray(String[] strArray) {
+        this.strArray = strArray;
+    }
+
+    public List<String> getStrList() {
+        return strList;
+    }
+
+    public void setStrList(List<String> strList) {
+        this.strList = strList;
+    }
+
+    public Map<String, String> getStrMap() {
+        return strMap;
+    }
+
+    public void setStrMap(Map<String, String> strMap) {
+        this.strMap = strMap;
+    }
+
+    public HashMap<String, String> getHashMap() {
+        return hashMap;
+    }
+
+    public void setHashMap(HashMap<String, String> hashMap) {
+        this.hashMap = hashMap;
+    }
+
+    public ArrayList<String> getArrayList() {
+        return arrayList;
+    }
+
+    public void setArrayList(ArrayList<String> arrayList) {
+        this.arrayList = arrayList;
+    }
+
+    public HashSet<String> getHashSet() {
+        return hashSet;
+    }
+
+    public void setHashSet(HashSet<String> hashSet) {
+        this.hashSet = hashSet;
+    }
+
+    public TestEnum getTestEnum() {
+        return testEnum;
+    }
+
+    public void setTestEnum(TestEnum testEnum) {
+        this.testEnum = testEnum;
     }
 }

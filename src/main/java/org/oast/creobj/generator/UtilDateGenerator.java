@@ -15,4 +15,9 @@ public class UtilDateGenerator extends CommonValueGenerator<Date> {
         }
         throw new IllegalArgumentException(getIllegalClassAlert(claz));
     }
+
+    @Override
+    public boolean canApplyForClass(Class<?> clazz) {
+        return Date.class.isAssignableFrom(clazz);
+    }
 }

@@ -12,6 +12,11 @@ public class EmptyMapGenerator extends CommonValueGenerator {
     }
 
     @Override
+    public boolean canApplyForClass(Class clazz) {
+        return Map.class.isAssignableFrom(clazz);
+    }
+
+    @Override
     public Map generateValue(Class claz) {
         return new HashMap();
     }

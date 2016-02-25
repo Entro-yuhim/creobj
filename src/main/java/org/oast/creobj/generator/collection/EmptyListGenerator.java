@@ -12,6 +12,11 @@ public class EmptyListGenerator extends CommonValueGenerator {
     }
 
     @Override
+    public boolean canApplyForClass(Class clazz) {
+        return List.class.isAssignableFrom(clazz);
+    }
+
+    @Override
     public List generateValue(Class claz) {
         return new ArrayList();
     }

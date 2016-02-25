@@ -2,7 +2,7 @@ package org.oast.creobj.generator;
 
 public abstract class CommonValueGenerator<T> implements ValueGenerator<T> {
 
-    public CommonValueGenerator(){}
+    protected CommonValueGenerator(){}
 
     @Override
     public boolean isAssignable() {
@@ -13,5 +13,4 @@ public abstract class CommonValueGenerator<T> implements ValueGenerator<T> {
         return "[WARNING] Class " + claz.getName() +
                 " cannot be converted to " + getValueClass().getName();
     }
-
 }

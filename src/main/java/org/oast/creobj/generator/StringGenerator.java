@@ -17,4 +17,9 @@ public class StringGenerator extends CommonValueGenerator<String> {
         throw new IllegalArgumentException(getIllegalClassAlert(claz));
     }
 
+    @Override
+    public boolean canApplyForClass(Class<?> clazz) {
+        return clazz.equals(String.class);
+    }
+
 }

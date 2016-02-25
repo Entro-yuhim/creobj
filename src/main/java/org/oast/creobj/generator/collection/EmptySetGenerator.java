@@ -12,6 +12,11 @@ public class EmptySetGenerator extends CommonValueGenerator {
     }
 
     @Override
+    public boolean canApplyForClass(Class clazz) {
+        return Set.class.isAssignableFrom(clazz);
+    }
+
+    @Override
     public Set generateValue(Class claz) {
         return new HashSet();
     }
