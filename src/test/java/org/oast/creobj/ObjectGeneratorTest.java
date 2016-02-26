@@ -3,6 +3,7 @@ package org.oast.creobj;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oast.creobj.generator.EnumGenerator;
+import org.oast.creobj.generator.NumberGenerator;
 import org.oast.creobj.generator.StringGenerator;
 import org.oast.creobj.generator.UtilDateGenerator;
 import org.oast.creobj.object.*;
@@ -18,7 +19,6 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -28,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
  */
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({StringGenerator.class, ObjectGenerator.class, EnumGenerator.class, UtilDateGenerator.class})
+@PrepareForTest({StringGenerator.class, ObjectGenerator.class, EnumGenerator.class, UtilDateGenerator.class, NumberGenerator.class})
 public class ObjectGeneratorTest {
     @Test
     public void testStringGenerator() throws Exception {
@@ -123,6 +123,7 @@ public class ObjectGeneratorTest {
         //given
         final Random randomMock = mock(Random.class);
         PowerMockito.whenNew(Random.class).withAnyArguments().thenReturn(randomMock);
+        PowerMockito.whenNew(Random.class).withAnyArguments().thenReturn(randomMock);
         prepareRandomForNumberGeneration(randomMock);
         given(randomMock.nextInt(Character.MAX_VALUE + 1)).willReturn(1);
 
@@ -157,6 +158,6 @@ public class ObjectGeneratorTest {
         assertEquals("Verification of string generation failed", "GeneratedUUID", object.getStr());
         assertEquals("Verification of java.util.Date generation failed", mockDate, object.getDate());
 
-        assertEquals("Verification of Integer generation failed", (Integer) Integer.MAX_VALUE, object.getiNumber());
+        assertEquals("Verification of Integer generation failed", new Integer(1), object.getiNumber());
     }
 }
